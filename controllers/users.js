@@ -61,4 +61,30 @@ const logout = async (req, res, next) => {
   }
 };
 
-module.exports = { signup, login, logout };
+const update = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    if (JSON.stringify(req.body) === "{}") {
+      return res.status(201).json({ message: "missing field" });
+    }
+    const { id, email, subscription } = await Users.findById(userId);
+    const updated = await Users.updateSub(userId, req.body);
+    if (updated) {
+      return res.json({
+        status: "success",
+        code: HttpCode.OK,
+        message: "User updated.",
+        data: { id, email, subscription },
+      });
+    }
+    return res.json({
+      status: "error",
+      code: HttpCode.NOT_FOUND,
+      message: "Not found.",
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+module.exports = { signup, login, logout, update };

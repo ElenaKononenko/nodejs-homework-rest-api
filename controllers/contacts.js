@@ -74,7 +74,7 @@ const update = async (req, res, next) => {
     if (JSON.stringify(req.body) === "{}") {
       return res.status(201).json({ message: "missing field" });
     }
-
+    console.log(req.body);
     const updated = await Contacts.updateContact(
       userId,
       req.params.id,
