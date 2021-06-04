@@ -1,5 +1,5 @@
-const { Schema, model } = require("mongoose");
-
+const { Schema, model, SchemaTypes } = require("mongoose");
+const mongoosePaginate = require("mongoose-paginate-v2");
 const contactSchema = new Schema(
   {
     name: {
@@ -12,6 +12,10 @@ const contactSchema = new Schema(
     phone: {
       type: String,
       max: 18,
+    },
+    owner: {
+      type: SchemaTypes.ObjectId,
+      ref: "user",
     },
     favorite: {
       type: Boolean,
@@ -39,7 +43,7 @@ const contactSchema = new Schema(
 contactSchema.virtual("virtualGlory").get(function () {
   return `Can be given to the glory of Óðinn if his name is ${this.name}`;
 });
-
+contactSchema.plugin(mongoosePaginate);
 const Contact = model("contact", contactSchema);
 
 module.exports = Contact;

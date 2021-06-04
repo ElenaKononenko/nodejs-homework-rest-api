@@ -17,7 +17,6 @@ const schemaUpdateContact = Joi.object({
   email: Joi.string().email().optional(),
   phone: Joi.string()
     .pattern(/^[0-9]+$/)
-
     .max(18)
     .optional(),
   features: Joi.array().optional(),
