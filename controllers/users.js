@@ -87,4 +87,20 @@ const update = async (req, res, next) => {
   }
 };
 
-module.exports = { signup, login, logout, update };
+const getCurrent = async (req, res, next) => {
+  try {
+    const id = req.user.id;
+    const { email, subscription } = req.user;
+    console.log(req.user);
+    await Users.findById(id);
+    return res.json({
+      status: "OK",
+      code: HttpCode.OK,
+      data: { email, subscription },
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+module.exports = { signup, login, logout, update, getCurrent };

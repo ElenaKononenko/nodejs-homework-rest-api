@@ -71,9 +71,6 @@ const remove = async (req, res, next) => {
 const update = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    if (JSON.stringify(req.body) === "{}") {
-      return res.status(201).json({ message: "missing field" });
-    }
     console.log(req.body);
     const updated = await Contacts.updateContact(
       userId,
