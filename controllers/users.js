@@ -1,7 +1,12 @@
 const Users = require("../repositories/users");
 const { HttpCode } = require("../helpers/constants");
 const jwt = require("jsonwebtoken");
+const fs = require("fs/promises");
+const path = require("path");
+
 require("dotenv").config();
+const UploadAvatarService = require("../services/local-upload");
+
 const SECRET_KEY = process.env.SECRET_KEY;
 
 const signup = async (req, res, next) => {
@@ -14,11 +19,11 @@ const signup = async (req, res, next) => {
         message: "Email in use",
       });
     }
-    const { id, email, subscription } = await Users.create(req.body);
+    const { id, email, subscription, avatar } = await Users.create(req.body);
     return res.status(HttpCode.CREATED).json({
       status: "success",
       code: HttpCode.CREATED,
-      data: { id, email, subscription },
+      data: { id, email, subscription, avatar },
     });
   } catch (e) {
     next(e);
@@ -89,18 +94,34 @@ const update = async (req, res, next) => {
 
 const getCurrent = async (req, res, next) => {
   try {
-    const id = req.user.id;
-    const { email, subscription } = req.user;
-    console.log(req.user);
-    await Users.findById(id);
+    const { email, subscription, avatar } = req.user;
     return res.json({
       status: "OK",
       code: HttpCode.OK,
-      data: { email, subscription },
+      data: { email, subscription, avatar },
     });
   } catch (e) {
     next(e);
   }
 };
 
-module.exports = { signup, login, logout, update, getCurrent };
+const avatars = async (req, res, next) => {
+  try {
+    const id = req.user.id;
+    const uploads = new UploadAvatarService(process.env.AVATAR_OF_USERS);
+    const avatarUrl = await uploads.saveAvatar({ idUser: id, file: req.file });
+
+    try {
+      await fs.unlink(path.join(process.env.AVATAR_OF_USERS, req.user.avatar));
+    } catch (e) {
+      console.log(e.message);
+    }
+
+    await Users.updateAvatar(id, avatarUrl);
+    res.json({ status: "success", code: HttpCode.OK, data: { avatarUrl } });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { signup, login, logout, update, getCurrent, avatars };
