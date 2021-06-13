@@ -5,6 +5,8 @@ const guard = require("../../../helpers/guard");
 const upload = require("../../../helpers/upload");
 
 router.get("/current", guard, cntr.getCurrent);
+router.get("/verify/:verificationToken", cntr.verify);
+router.post("/verify", cntr.repeatEmailVerify);
 router.patch("/:id/subscription", guard, cntr.update);
 router.post("/signup", cntr.signup);
 router.post("/login", cntr.login);

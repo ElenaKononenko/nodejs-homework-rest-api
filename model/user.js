@@ -1,5 +1,6 @@
 const { Schema, model } = require("mongoose");
 const { Subscription } = require("../helpers/constants");
+const { v4: uuid } = require("uuid");
 const bcrypt = require("bcryptjs");
 const gr = require("gravatar");
 const SALT_WORK_FACTOR = 10;
@@ -33,6 +34,15 @@ const userSchema = new Schema({
     default: function () {
       return gr.url(this.email, { s: "250" }, true);
     },
+  },
+  verify: {
+    type: Boolean,
+    default: false,
+  },
+  verifyToken: {
+    type: String,
+    required: [true, "Verify token is required"],
+    default: uuid(),
   },
 });
 
